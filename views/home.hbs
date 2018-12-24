@@ -3,13 +3,34 @@
     <head>
         <meta charset="utf-8">
         <title>Help Page</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     </head>
     <body>
         <h1>{{pageTitle}}</h1>
         <p>Some text here</p>
 
+        <button id="create-tracks">Create Tracks</button>
+
         <footer>
             <p>Copyright {{currentYear}}</p>
         </footer>
+
+        <script>
+            $("#create-tracks").click(() => {
+                $.post(
+                    "/talks-track-process",
+                    {
+                        content: "dummy"
+                    },
+                    (data, status) => {
+                        console.log(data);
+                        console.log("Status: " + status);
+                    }
+                ).fail(() => {
+                    console.log("Post error (server error)");
+                });
+            });
+        </script>
     </body>
 </html>
