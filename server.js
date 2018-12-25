@@ -1,7 +1,7 @@
 const express = require('express');
 const hbs = require('hbs');
 const bodyParser = require('body-parser');
-const mainLogic = require('./main_using_nodejs/app');
+const mainLogic = require('./main_logic/app');
 
 const port = process.env.PORT || 3000;
 
