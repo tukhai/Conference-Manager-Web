@@ -5,27 +5,95 @@
         <title>Help Page</title>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            .left-col {
+                float: left;
+                margin-left: 30px;
+            }
+            .right-col {
+                float: left;
+                margin-left: 70px;
+            }
+            .clear {
+                clear: both;
+            }
+            h3 {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            textarea#input-talks-list {
+                margin-top: 20px;
+                font-size: 14px;
+            }
+            button#create-tracks {
+                margin-top: 10px;
+                font-size: 14px;
+            }
+            i {
+                margin-top: 20px;
+                font-size: 40px !important;
+            }
+        </style>
     </head>
     <body>
         <h1>{{pageTitle}}</h1>
-        <p>Some text here</p>
+        <p>Web version of Conference Manager App</p>
+        <p>
+            For more details, please visit Conference Manager App project at 
+            <a href="https://github.com/tukhai/Conference-Manager-App">https://github.com/tukhai/Conference-Manager-App</a>
+        </p>
+        <p>You can input your talks list to "Input talks list" and click "Create Tracks" button, the tracks would be generated.</p>
+        <div style="margin-bottom: 10px;">
+            <p>You can also COPY the following examples into Input talks list to see the correct the format</p>
+            <div>a) <a href="/resources/source.txt" target="_blank">source.txt</a> (Default list of proposal talks)</div>
+            <div>b) <a href="/resources/source_test_case_1.txt" target="_blank">source_test_case_1.txt</a> (A lot of talks, excess to track 3)</div>
+            <div>c) <a href="/resources/source_test_case_2.txt" target="_blank">source_test_case_2.txt</a> (A lot of talks, excess to track 4)</div>
+            <div>d) <a href="/resources/source_test_case_3.txt" target="_blank">source_test_case_3.txt</a> (Less talks, only has track 1)</div>
+            <div>e) <a href="/resources/source_test_case_4.txt" target="_blank">source_test_case_4.txt</a> (Most of talk doesnt have proper time => only take the talk with proper time)</div>
+        </div>
 
-        <button id="create-tracks">Create Tracks</button>
-
-        <footer>
-            <p>Copyright {{currentYear}}</p>
-        </footer>
+        <div>
+            <div class="left-col">
+                <h3>Input talks list</h3>
+                <textarea id="input-talks-list" rows="20" cols="50"></textarea>
+                <div class="clear"></div>
+                <button id="create-tracks">Create Tracks</button>
+            </div>
+            <div class="right-col">
+                <h3>Auto generated tracks</h3>
+                <div id="right-col"></div>
+            </div>
+        </div>
+        <div class="clear" style="margin-bottom: 150px;"></div>
 
         <script>
             $("#create-tracks").click(() => {
+                var inputTalksList = $("#input-talks-list").val();
+                $("#create-tracks").attr("disabled", "disabled");
+                $("#right-col").html('<i class="fa fa-spinner fa-spin"></i>');
+
                 $.post(
                     "/talks-track-process",
                     {
-                        content: "dummy"
+                        content: inputTalksList
                     },
                     (data, status) => {
-                        console.log(data);
-                        console.log("Status: " + status);
+                        if (status == "success") {
+                            var talkArr = data.mainList.split("\n");
+                            
+                            var mainHTML = "";
+                            talkArr.map((item) => {
+                                if (item == "") {
+                                    mainHTML += "<div style='height: 20px;'></div>";
+                                } else {
+                                    mainHTML += `<div>${item}</div>`;
+                                }
+                            });
+
+                            $("#right-col").html(mainHTML);
+                            $("#create-tracks").removeAttr("disabled");
+                        }
                     }
                 ).fail(() => {
                     console.log("Post error (server error)");
